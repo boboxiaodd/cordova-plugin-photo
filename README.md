@@ -1,5 +1,6 @@
 # cordova-plugin-photo
-cordova photo picker
+
+以 https://github.com/SilenceLove/HXPhotoPicker 为基础
 
 #### 选择图片
 
