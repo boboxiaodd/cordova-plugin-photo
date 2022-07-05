@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <plugin id="cordova-plugin-photo" version="0.0.1" xmlns="http://apache.org/cordova/ns/plugins/1.0">
-    <name>CDVLocalWWW</name>
+    <name>CDVPhotoPicker</name>
     <js-module name="CDVPhotoPicker" src="www/photo.js">
         <clobbers target="CDVPhotoPicker" />
     </js-module>
