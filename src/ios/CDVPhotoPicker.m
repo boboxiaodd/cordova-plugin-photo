@@ -34,11 +34,14 @@
                 newImg = [photoList[i].previewPhoto resize:_photo_max_size];
             }
             NSData *imageData = UIImageJPEGRepresentation(newImg,0.8);
-            NSLog(@"filesize: %lu",(unsigned long)[imageData length]);
+            long long filesize = [imageData length];
             NSURL *fileURL = [[tmpDirURL URLByAppendingPathComponent:[[NSUUID UUID] UUIDString]] URLByAppendingPathExtension:@"jpg"];
             [imageData writeToURL:fileURL atomically:YES];
             imageData = nil;
-            [list addObject: [fileURL path]];
+            [list addObject: @{@"path":[fileURL path],
+                               @"filesize": @(filesize),
+                               @"size": @{@"width": @(newImg.size.width) ,@"height": @(newImg.size.height)}
+                             }];
         }
         [self send_event: _pk_command withMessage:@{@"list": list} Alive:NO State:YES];
     }
@@ -46,7 +49,10 @@
         NSMutableArray * list = [NSMutableArray array];
         for(int i = 0; i< videoList.count ;i ++) {
             NSLog(@"videoDuration: %d",(int)videoList[i].videoDuration);
-            [list addObject:[videoList[i].videoURL path]];
+            [list addObject: @{@"path":[videoList[i].videoURL path],
+                               @"duration": @(videoList[i].videoDuration),
+                               @"filesize": @([self getFileSize:[videoList[i].videoURL path]])
+                             }];
         }
         [self send_event: _pk_command withMessage:@{@"list": list} Alive:NO State:YES];
     }
@@ -126,6 +132,14 @@
     CDVPluginResult* res = [CDVPluginResult resultWithStatus: (state ? CDVCommandStatus_OK : CDVCommandStatus_ERROR) messageAsDictionary:message];
     if(alive) [res setKeepCallbackAsBool:YES];
     [self.commandDelegate sendPluginResult: res callbackId: command.callbackId];
+}
+
+-(long long)getFileSize:(NSString *)filepath
+{
+    NSError *attributesError;
+    NSDictionary *fileAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath: filepath error:&attributesError];
+    NSNumber *fileSizeNumber = [fileAttributes objectForKey:NSFileSize];
+    return [fileSizeNumber longLongValue];
 }
 
 @end
