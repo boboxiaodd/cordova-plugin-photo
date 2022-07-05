@@ -13,6 +13,8 @@
         </config-file>
         <header-file src="src/ios/CDVPhotoPicker.h" />
         <source-file src="src/ios/CDVPhotoPicker.m" />
+        <header-file src="src/ios/UIImage+Resize.h" />
+        <source-file src="src/ios/UIImage+Resize.m" />
         <podspec>
             <config>
                 <source url="https://github.com/CocoaPods/Specs.git"/>
