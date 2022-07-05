@@ -27,8 +27,10 @@
             //压缩图片尺寸
             UIImage *newImg;
             if(photoList[i].photoEdit){
+                if(!photoList[i].photoEdit.editPreviewImage) continue;
                 newImg = [photoList[i].photoEdit.editPreviewImage resize:_photo_max_size];
             }else{
+                if(!photoList[i].previewPhoto) continue;
                 newImg = [photoList[i].previewPhoto resize:_photo_max_size];
             }
             NSData *imageData = UIImageJPEGRepresentation(newImg,0.8);
@@ -37,6 +39,14 @@
             [imageData writeToURL:fileURL atomically:YES];
             imageData = nil;
             [list addObject: [fileURL path]];
+        }
+        [self send_event: _pk_command withMessage:@{@"list": list} Alive:NO State:YES];
+    }
+    if(videoList.count > 0){
+        NSMutableArray * list = [NSMutableArray array];
+        for(int i = 0; i< videoList.count ;i ++) {
+            NSLog(@"videoDuration: %d",(int)videoList[i].videoDuration);
+            [list addObject:[videoList[i].videoURL path]];
         }
         [self send_event: _pk_command withMessage:@{@"list": list} Alive:NO State:YES];
     }
@@ -53,12 +63,12 @@
 {
     _pk_command = command;
     NSDictionary *options = [command.arguments objectAtIndex: 0];
-    int picker_type = [[options valueForKey:@"picker_type"] intValue] || 1;
-    int max_num = [[options valueForKey:@"max"] intValue] || 1;
-    int is_avatar = [[options valueForKey:@"is_avatar"] boolValue] || NO;
-    int max_size = [[options valueForKey:@"max_size"] intValue];
-    if(max_size) _photo_max_size = max_size; else  _photo_max_size = kPhotoMaxSize;
+    int picker_type = [[options valueForKey:@"picker_type"] intValue];
+    int max_num = [[options valueForKey:@"max"] intValue];
     if(picker_type == 1) {
+        int is_avatar = [[options valueForKey:@"is_avatar"] boolValue] || NO;
+        int max_size = [[options valueForKey:@"max_size"] intValue];
+        if(max_size) _photo_max_size = max_size; else  _photo_max_size = kPhotoMaxSize;
         _manager = [[HXPhotoManager alloc] initWithType:HXPhotoManagerSelectedTypePhoto];
         if(is_avatar){
             _isAvatar = YES;
@@ -75,9 +85,36 @@
             _manager.configuration.hideOriginalBtn = YES;
             _manager.configuration.requestOriginalImage = YES;
             _manager.configuration.requestImageAfterFinishingSelection = YES;
+            _manager.configuration.selectVideoBeyondTheLimitTimeAutoEdit = YES;
+            NSArray *emoji = [options objectForKey:@"emoji"];
+            if(emoji.count > 0){
+                NSMutableArray * chartList = [NSMutableArray array];
+                HXPhotoEditChartletTitleModel * titleModel = [HXPhotoEditChartletTitleModel modelWithNetworkNURL:[NSURL URLWithString:emoji[0]]];
+                for(int j = 0; j< emoji.count ; j++ ){
+                    HXPhotoEditChartletModel * model = [HXPhotoEditChartletModel modelWithNetworkNURL:[NSURL URLWithString:emoji[j]]];
+                    [chartList addObject:model];
+                }
+                titleModel.models = chartList;
+                titleModel.selected = YES;
+                _manager.configuration.photoEditConfigur.chartletModels = [NSArray arrayWithObject: titleModel];
+            }
         }
     }else{
+        int max_duration = [[options valueForKey:@"max_duration"] intValue];
+        int min_duration = [[options valueForKey:@"min_duration"] intValue];
+        int quality = [[options valueForKey:@"quality"] intValue];
         _manager = [[HXPhotoManager alloc] initWithType:HXPhotoManagerSelectedTypeVideo];
+        _manager.configuration.hideOriginalBtn = YES;
+        _manager.configuration.videoMaxNum = max_num;
+        _manager.configuration.videoMaximumDuration = max_duration;
+        _manager.configuration.videoMaximumSelectDuration = max_duration;
+        _manager.configuration.videoMinimumDuration = min_duration;
+        _manager.configuration.videoMinimumSelectDuration = min_duration;
+        _manager.configuration.videoQuality = quality;
+        _manager.configuration.selectVideoBeyondTheLimitTimeAutoEdit = YES;
+        _manager.configuration.requestImageAfterFinishingSelection = YES;
+        _manager.configuration.minVideoClippingTime = min_duration;
+        _manager.configuration.maxVideoClippingTime = max_duration;
     }
     HXCustomNavigationController *nav = [[HXCustomNavigationController alloc] initWithManager:self.manager delegate:self];
     [self.viewController presentViewController:nav animated:YES completion:nil];
