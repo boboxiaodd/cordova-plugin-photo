@@ -94,15 +94,20 @@
             _manager.configuration.selectVideoBeyondTheLimitTimeAutoEdit = YES;
             NSArray *emoji = [options objectForKey:@"emoji"];
             if(emoji.count > 0){
-                NSMutableArray * chartList = [NSMutableArray array];
-                HXPhotoEditChartletTitleModel * titleModel = [HXPhotoEditChartletTitleModel modelWithNetworkNURL:[NSURL URLWithString:emoji[0]]];
-                for(int j = 0; j< emoji.count ; j++ ){
-                    HXPhotoEditChartletModel * model = [HXPhotoEditChartletModel modelWithNetworkNURL:[NSURL URLWithString:emoji[j]]];
-                    [chartList addObject:model];
+                NSMutableArray * emojiList = [NSMutableArray array];
+                for(int i = 0 ;i <emoji.count ; i++ ){
+                    NSMutableArray * chartList = [NSMutableArray array];
+                    NSArray * list = (NSArray *)emoji[i];
+                    HXPhotoEditChartletTitleModel * titleModel = [HXPhotoEditChartletTitleModel modelWithNetworkNURL:[NSURL URLWithString:list[0]]];
+                    for(int j = 0; j< list.count; j++ ){
+                        HXPhotoEditChartletModel * model = [HXPhotoEditChartletModel modelWithNetworkNURL:[NSURL URLWithString:list[j]]];
+                        [chartList addObject:model];
+                    }
+                    titleModel.models = chartList;
+                    if(i == 0) titleModel.selected = YES;
+                    [emojiList addObject:titleModel];
                 }
-                titleModel.models = chartList;
-                titleModel.selected = YES;
-                _manager.configuration.photoEditConfigur.chartletModels = [NSArray arrayWithObject: titleModel];
+                _manager.configuration.photoEditConfigur.chartletModels = emojiList;
             }
         }
     }else{
