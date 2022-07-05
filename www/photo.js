@@ -1,7 +1,7 @@
 const exec = require('cordova/exec');
-const CDVLocalWWW = {
-    update:function (success,fail,option){
-        exec(success,fail,'CDVLocalWWW','update',[option]);
+const CDVPhotoPicker = {
+    picker:function (success,fail,option){
+        exec(success,fail,'CDVPhotoPicker','picker',[option]);
     }
 };
-module.exports = CDVLocalWWW;
+module.exports = CDVPhotoPicker;
