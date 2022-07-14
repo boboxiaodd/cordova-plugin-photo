@@ -115,6 +115,8 @@
         int max_duration = [[options valueForKey:@"max_duration"] intValue];
         int min_duration = [[options valueForKey:@"min_duration"] intValue];
         int quality = [[options valueForKey:@"quality"] intValue];
+        BOOL original = [[options valueForKey:@"original"] boolValue];
+        int limitVideoSize = [[options valueForKey:@"limitVideoSize"] intValue];
         _manager = [[HXPhotoManager alloc] initWithType:HXPhotoManagerSelectedTypeVideo];
         _manager.configuration.hideOriginalBtn = YES;
         _manager.configuration.videoMaxNum = max_num;
@@ -122,8 +124,15 @@
         _manager.configuration.videoMaximumSelectDuration = max_duration;
         _manager.configuration.videoMinimumDuration = min_duration;
         _manager.configuration.videoMinimumSelectDuration = min_duration;
-        _manager.configuration.editVideoExportPreset = HXVideoEditorExportPresetMediumQuality;
-        _manager.configuration.videoQuality = quality;
+        _manager.configuration.selectVideoLimitSize = YES;
+        _manager.configuration.limitVideoSize = limitVideoSize;
+        if(original){
+            _manager.configuration.requestOriginalImage = YES;
+            _manager.configuration.exportVideoURLForHighestQuality = YES;
+        }else{
+            _manager.configuration.editVideoExportPreset = HXVideoEditorExportPresetMediumQuality;
+            _manager.configuration.videoQuality = quality;
+        }
         _manager.configuration.selectVideoBeyondTheLimitTimeAutoEdit = YES;
         _manager.configuration.requestImageAfterFinishingSelection = YES;
         _manager.configuration.minVideoClippingTime = min_duration;
