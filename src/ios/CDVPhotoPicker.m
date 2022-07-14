@@ -28,15 +28,15 @@
             UIImage *newImg;
             if(photoList[i].photoEdit){
                 if(!photoList[i].photoEdit.editPreviewImage) continue;
-                newImg = [photoList[i].photoEdit.editPreviewImage resize:_photo_max_size];
+                newImg = photoList[i].photoEdit.editPreviewImage; //[photoList[i].photoEdit.editPreviewImage resize:_photo_max_size];
             }else{
                 if(!photoList[i].previewPhoto) continue;
-                newImg = [photoList[i].previewPhoto resize:_photo_max_size];
+                newImg = photoList[i].previewPhoto; //[photoList[i].previewPhoto resize:_photo_max_size];
             }
-            NSData *imageData = UIImageJPEGRepresentation(newImg,0.8);
-            long long filesize = [imageData length];
             NSURL *fileURL = [[tmpDirURL URLByAppendingPathComponent:[[NSUUID UUID] UUIDString]] URLByAppendingPathExtension:@"jpg"];
-            [imageData writeToURL:fileURL atomically:YES];
+            NSData *imageData = UIImageJPEGRepresentation(newImg,0.8);
+            unsigned long filesize = imageData.length;
+            [imageData writeToFile:[fileURL path] atomically:YES];
             imageData = nil;
             [list addObject: @{@"path":[fileURL path],
                                @"filesize": @(filesize),
@@ -87,11 +87,12 @@
             _manager.configuration.photoEditConfigur.aspectRatio = HXPhotoEditAspectRatioType_1x1;
         }else{
             _isAvatar = NO;
-            _manager.configuration.maxNum = max_num;
+            _manager.configuration.photoMaxNum = max_num;
             _manager.configuration.hideOriginalBtn = YES;
-            _manager.configuration.requestOriginalImage = YES;
+            _manager.configuration.requestOriginalImage = NO;
+            _manager.configuration.photoEditConfigur.supportRotation = YES;
+            _manager.configuration.photoEditConfigur.onlyCliping = YES;
             _manager.configuration.requestImageAfterFinishingSelection = YES;
-            _manager.configuration.selectVideoBeyondTheLimitTimeAutoEdit = YES;
             NSArray *emoji = [options objectForKey:@"emoji"];
             if(emoji.count > 0){
                 NSMutableArray * emojiList = [NSMutableArray array];
@@ -121,6 +122,7 @@
         _manager.configuration.videoMaximumSelectDuration = max_duration;
         _manager.configuration.videoMinimumDuration = min_duration;
         _manager.configuration.videoMinimumSelectDuration = min_duration;
+        _manager.configuration.editVideoExportPreset = HXVideoEditorExportPresetMediumQuality;
         _manager.configuration.videoQuality = quality;
         _manager.configuration.selectVideoBeyondTheLimitTimeAutoEdit = YES;
         _manager.configuration.requestImageAfterFinishingSelection = YES;
