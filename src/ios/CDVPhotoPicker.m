@@ -21,30 +21,30 @@
 -(void)photoNavigationViewController:(HXCustomNavigationController *)photoNavigationViewController didDoneAllList:(NSArray<HXPhotoModel *> *)allList photos:(NSArray<HXPhotoModel *> *)photoList videos:(NSArray<HXPhotoModel *> *)videoList original:(BOOL)original
 {
     if(photoList.count > 0){
-        NSURL *tmpDirURL = [NSURL fileURLWithPath:NSTemporaryDirectory() isDirectory:YES];
-        NSMutableArray * list = [NSMutableArray array];
-        for(int i = 0; i< photoList.count ;i ++) {
-            //压缩图片尺寸
-            UIImage *newImg;
-            if(photoList[i].photoEdit){
-                if(!photoList[i].photoEdit.editPreviewImage) continue;
-                newImg = photoList[i].photoEdit.editPreviewImage; //[photoList[i].photoEdit.editPreviewImage resize:_photo_max_size];
-            }else{
-                if(!photoList[i].previewPhoto) continue;
-                newImg = photoList[i].previewPhoto; //[photoList[i].previewPhoto resize:_photo_max_size];
+            NSURL *tmpDirURL = [NSURL fileURLWithPath:NSTemporaryDirectory() isDirectory:YES];
+            NSMutableArray * list = [NSMutableArray array];
+            for(int i = 0; i< photoList.count ;i ++) {
+                //压缩图片尺寸
+                UIImage *newImg;
+                if(photoList[i].photoEdit){
+                    if(!photoList[i].photoEdit.editPreviewImage) continue;
+                    newImg = photoList[i].photoEdit.editPreviewImage;
+                }else{
+                    if(!photoList[i].previewPhoto) continue;
+                    newImg = photoList[i].previewPhoto;
+                }
+                NSURL *fileURL = [[tmpDirURL URLByAppendingPathComponent:[[NSUUID UUID] UUIDString]] URLByAppendingPathExtension:@"jpg"];
+                NSData *imageData = UIImageJPEGRepresentation(newImg,0.8);
+                unsigned long filesize = imageData.length;
+                [imageData writeToFile:[fileURL path] atomically:YES];
+                imageData = nil;
+                [list addObject: @{@"path":[fileURL path],
+                                   @"filesize": @(filesize),
+                                   @"size": @{@"width": @(newImg.size.width) ,@"height": @(newImg.size.height)}
+                                 }];
             }
-            NSURL *fileURL = [[tmpDirURL URLByAppendingPathComponent:[[NSUUID UUID] UUIDString]] URLByAppendingPathExtension:@"jpg"];
-            NSData *imageData = UIImageJPEGRepresentation(newImg,0.8);
-            unsigned long filesize = imageData.length;
-            [imageData writeToFile:[fileURL path] atomically:YES];
-            imageData = nil;
-            [list addObject: @{@"path":[fileURL path],
-                               @"filesize": @(filesize),
-                               @"size": @{@"width": @(newImg.size.width) ,@"height": @(newImg.size.height)}
-                             }];
+            [self send_event: _pk_command withMessage:@{@"list": list} Alive:NO State:YES];
         }
-        [self send_event: _pk_command withMessage:@{@"list": list} Alive:NO State:YES];
-    }
     if(videoList.count > 0){
         NSMutableArray * list = [NSMutableArray array];
         for(int i = 0; i< videoList.count ;i ++) {
@@ -74,6 +74,7 @@
     if(picker_type == 1) {
         int is_avatar = [[options valueForKey:@"is_avatar"] boolValue] || NO;
         int max_size = [[options valueForKey:@"max_size"] intValue];
+        BOOL onlyCliping = [[options valueForKey:@"onlyCliping"] boolValue] || NO;
         if(max_size) _photo_max_size = max_size; else  _photo_max_size = kPhotoMaxSize;
         _manager = [[HXPhotoManager alloc] initWithType:HXPhotoManagerSelectedTypePhoto];
         if(is_avatar){
@@ -91,7 +92,7 @@
             _manager.configuration.hideOriginalBtn = YES;
             _manager.configuration.requestOriginalImage = NO;
             _manager.configuration.photoEditConfigur.supportRotation = YES;
-            _manager.configuration.photoEditConfigur.onlyCliping = YES;
+            _manager.configuration.photoEditConfigur.onlyCliping = onlyCliping;
             _manager.configuration.requestImageAfterFinishingSelection = YES;
             NSArray *emoji = [options objectForKey:@"emoji"];
             if(emoji.count > 0){
