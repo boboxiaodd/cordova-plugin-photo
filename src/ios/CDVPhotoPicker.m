@@ -77,6 +77,12 @@
         BOOL onlyCliping = [[options valueForKey:@"onlyCliping"] boolValue] || NO;
         if(max_size) _photo_max_size = max_size; else  _photo_max_size = kPhotoMaxSize;
         _manager = [[HXPhotoManager alloc] initWithType:HXPhotoManagerSelectedTypePhoto];
+        _manager.configuration.themeColor = [UIColor whiteColor];
+        _manager.configuration.navBarBackgroudColor = [UIColor blackColor];
+        _manager.configuration.navBarStyle = UIBarStyleBlack;
+        _manager.configuration.bottomDoneBtnBgColor = [UIColor greenColor];
+        _manager.configuration.selectedTitleColor = [UIColor greenColor];
+        _manager.configuration.bottomViewBgColor = [UIColor blackColor];
         if(is_avatar){
             _isAvatar = YES;
             _manager.configuration.hideOriginalBtn = YES;
@@ -138,6 +144,7 @@
         _manager.configuration.requestImageAfterFinishingSelection = YES;
         _manager.configuration.minVideoClippingTime = min_duration;
         _manager.configuration.maxVideoClippingTime = max_duration;
+        _manager.configuration.themeColor = [UIColor whiteColor];
     }
     HXCustomNavigationController *nav = [[HXCustomNavigationController alloc] initWithManager:self.manager delegate:self];
     [self.viewController presentViewController:nav animated:YES completion:nil];
