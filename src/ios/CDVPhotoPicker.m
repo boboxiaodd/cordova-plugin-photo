@@ -56,6 +56,7 @@
         }
         [self send_event: _pk_command withMessage:@{@"list": list} Alive:NO State:YES];
     }
+    _manager = nil;
 }
 -(void)photoNavigationViewControllerDidCancel:(HXCustomNavigationController *)photoNavigationViewController
 {
@@ -78,17 +79,24 @@
         if(max_size) _photo_max_size = max_size; else  _photo_max_size = kPhotoMaxSize;
         _manager = [[HXPhotoManager alloc] initWithType:HXPhotoManagerSelectedTypePhoto];
         _manager.configuration.themeColor = [UIColor whiteColor];
+        _manager.configuration.statusBarStyle = UIStatusBarStyleLightContent;
+        _manager.configuration.navigationTitleColor = [UIColor whiteColor];
         _manager.configuration.navBarBackgroudColor = [UIColor blackColor];
         _manager.configuration.navBarStyle = UIBarStyleBlack;
-        _manager.configuration.bottomDoneBtnBgColor = [UIColor greenColor];
-        _manager.configuration.selectedTitleColor = [UIColor greenColor];
+        _manager.configuration.bottomDoneBtnBgColor = [self colorWithHex:0x4aa321];
+        _manager.configuration.bottomDoneBtnTitleColor = [UIColor whiteColor];
+        _manager.configuration.selectedTitleColor = [UIColor whiteColor];
+        _manager.configuration.cellSelectedBgColor = [self colorWithHex:0x4aa321];
         _manager.configuration.bottomViewBgColor = [UIColor blackColor];
+        _manager.configuration.cameraCanLocation = NO;
         if(is_avatar){
             _isAvatar = YES;
             _manager.configuration.hideOriginalBtn = YES;
             _manager.configuration.singleSelected = YES;
             _manager.configuration.singleJumpEdit = YES;
+            _manager.configuration.cameraPhotoJumpEdit = YES;
             _manager.configuration.photoCanEdit = YES;
+            _manager.configuration.defaultFrontCamera = YES;
             _manager.configuration.photoEditConfigur.supportRotation = YES;
             _manager.configuration.photoEditConfigur.onlyCliping = YES;
             _manager.configuration.photoEditConfigur.aspectRatio = HXPhotoEditAspectRatioType_1x1;
@@ -125,8 +133,27 @@
         BOOL original = [[options valueForKey:@"original"] boolValue];
         int limitVideoSize = [[options valueForKey:@"limitVideoSize"] intValue];
         _manager = [[HXPhotoManager alloc] initWithType:HXPhotoManagerSelectedTypeVideo];
+
+        _manager.configuration.themeColor = [UIColor whiteColor];
+        _manager.configuration.statusBarStyle = UIStatusBarStyleLightContent;
+        _manager.configuration.navigationTitleColor = [UIColor whiteColor];
+        _manager.configuration.navBarBackgroudColor = [UIColor blackColor];
+        _manager.configuration.navBarStyle = UIBarStyleBlack;
+        _manager.configuration.bottomDoneBtnBgColor = [self colorWithHex:0x4aa321];
+        _manager.configuration.bottomDoneBtnTitleColor = [UIColor whiteColor];
+        _manager.configuration.selectedTitleColor = [UIColor whiteColor];
+        _manager.configuration.cellSelectedBgColor = [self colorWithHex:0x4aa321];
+        _manager.configuration.bottomViewBgColor = [UIColor blackColor];
+        _manager.configuration.cameraCanLocation = NO;
+
         _manager.configuration.hideOriginalBtn = YES;
-        _manager.configuration.videoMaxNum = max_num;
+        if(max_num == 1){
+            _manager.configuration.singleSelected = YES;
+            _manager.configuration.singleJumpEdit = YES;
+        }else{
+            _manager.configuration.videoMaxNum = max_num;
+        }
+        _manager.configuration.openCamera = NO;
         _manager.configuration.videoMaximumDuration = max_duration;
         _manager.configuration.videoMaximumSelectDuration = max_duration;
         _manager.configuration.videoMinimumDuration = min_duration;
@@ -164,6 +191,12 @@
     NSDictionary *fileAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath: filepath error:&attributesError];
     NSNumber *fileSizeNumber = [fileAttributes objectForKey:NSFileSize];
     return [fileSizeNumber longLongValue];
+}
+- (UIColor *) colorWithHex:(int)color {
+    float red = (color & 0xff0000) >> 16;
+    float green = (color & 0x00ff00) >> 8;
+    float blue = (color & 0x0000ff);
+    return [UIColor colorWithRed:red/255.0 green:green/255.0 blue:blue/255.0 alpha:1];
 }
 
 @end
