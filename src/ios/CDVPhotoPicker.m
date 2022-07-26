@@ -87,6 +87,7 @@
         _manager.configuration.bottomDoneBtnTitleColor = [UIColor whiteColor];
         _manager.configuration.selectedTitleColor = [UIColor whiteColor];
         _manager.configuration.cellSelectedBgColor = [self colorWithHex:0x4aa321];
+        _manager.configuration.photoEditConfigur.themeColor = [self colorWithHex:0x4aa321];
         _manager.configuration.bottomViewBgColor = [UIColor blackColor];
         _manager.configuration.cameraCanLocation = NO;
         if(is_avatar){
