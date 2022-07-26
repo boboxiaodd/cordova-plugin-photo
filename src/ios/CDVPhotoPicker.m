@@ -90,6 +90,7 @@
         _manager.configuration.photoEditConfigur.themeColor = [self colorWithHex:0x4aa321];
         _manager.configuration.bottomViewBgColor = [UIColor blackColor];
         _manager.configuration.cameraCanLocation = NO;
+        _manager.configuration.photoStyle = HXPhotoStyleInvariant;
         if(is_avatar){
             _isAvatar = YES;
             _manager.configuration.hideOriginalBtn = YES;
