@@ -19,7 +19,7 @@
                 <source url="https://github.com/CocoaPods/Specs.git"/>
             </config>
             <pods use-frameworks="true">
-                <pod name="HXPhotoPicker/SDWebImage" spec="~> 3.3.1" />
+                <pod name="HXPhotoPicker/SDWebImage" options=":git => 'https://github.com/boboxiaodd/HXPhotoPicker'" />
             </pods>
         </podspec>
     </platform>
