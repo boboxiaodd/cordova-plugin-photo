@@ -17,6 +17,14 @@
 
 }
 
+- (UIImage *)imageWithImage:(UIImage *)image convertToSize:(CGSize)size {
+    UIGraphicsBeginImageContext(size);
+    [image drawInRect:CGRectMake(0, 0, size.width, size.height)];
+    UIImage *destImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    return destImage;
+}
+
 #pragma mark HXCustomNavigationControllerDelegate 协议实现
 -(void)photoNavigationViewController:(HXCustomNavigationController *)photoNavigationViewController didDoneAllList:(NSArray<HXPhotoModel *> *)allList photos:(NSArray<HXPhotoModel *> *)photoList videos:(NSArray<HXPhotoModel *> *)videoList original:(BOOL)original
 {
@@ -29,6 +37,11 @@
                 if(photoList[i].photoEdit){
                     if(!photoList[i].photoEdit.editPreviewImage) continue;
                     newImg = photoList[i].photoEdit.editPreviewImage;
+                    if(_isAvatar && newImg.size.width != newImg.size.height){ //如果是设置头像，判断图片尺寸是否为正方形，否则截图
+                        NSLog(@"width = %f height = %f",newImg.size.width,newImg.size.height);
+                        CGFloat size =  MIN(newImg.size.width, newImg.size.height);
+                        newImg = [self imageWithImage:newImg convertToSize:CGSizeMake(size, size)];
+                    }
                 }else{
                     if(!photoList[i].previewPhoto) continue;
                     newImg = photoList[i].previewPhoto;
