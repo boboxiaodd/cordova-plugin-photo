@@ -1,5 +1,5 @@
 {
-    "name": "photo",
+    "name": "cordova-plugin-photo",
     "version": "0.0.1",
     "description": "Photo Picker",
     "cordova": {
