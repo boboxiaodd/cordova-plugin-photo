@@ -45,6 +45,22 @@
                 }else{
                     if(!photoList[i].previewPhoto) continue;
                     newImg = photoList[i].previewPhoto;
+                    CGFloat old_width = newImg.size.width;
+                    CGFloat old_height = newImg.size.height;
+                    CGFloat new_width = old_width;
+                    CGFloat new_height = old_height;
+                    if(old_width >= old_height){
+                        if(old_width > _photo_max_size){
+                            new_width = _photo_max_size;
+                            new_height = old_height * (_photo_max_size/old_width);
+                        }
+                    }else{
+                        if(old_height > _photo_max_size){
+                            new_height = _photo_max_size;
+                            new_width = old_width * (_photo_max_size/old_height);
+                        }
+                    }
+                    newImg = [self imageWithImage:newImg convertToSize:CGSizeMake(new_width, new_height)];
                 }
                 NSURL *fileURL = [[tmpDirURL URLByAppendingPathComponent:[[NSUUID UUID] UUIDString]] URLByAppendingPathExtension:@"jpg"];
                 NSData *imageData = UIImageJPEGRepresentation(newImg,0.8);
